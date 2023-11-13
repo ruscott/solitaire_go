@@ -1,6 +1,8 @@
 package main
 
 const (
-	ScreenWidth  = 640
-	ScreenHeight = 480
+	ScreenWidth  = 1200
+	ScreenHeight = 500
+	ButtonWidth = 20
+	ButtonHeight = 20
 )
