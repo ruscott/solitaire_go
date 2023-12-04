@@ -20,7 +20,7 @@ func initImages() {
 	loadImage("clubs", "images/suite/clubs.png")
 	loadImage("spades", "images/suite/spades.png")
 	loadImage("diamonds", "images/suite/diamonds.png")
-
+	loadImage("card", "images/card.png")
 	imagesReady = true
 }
 

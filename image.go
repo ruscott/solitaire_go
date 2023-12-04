@@ -1,22 +1,14 @@
 package main
 
 import (
-	"log"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func drawImages(screen *ebiten.Image, imageKey string) {
-	suite, ok := GetImage(imageKey)
-	if !ok {
-		log.Fatal("Failed to retrieve the '%s' image.", imageKey)
-		return
-	}
+func drawImages(screen *ebiten.Image, imageKey string, x, y int) {
+    suite, _ := GetImage(imageKey)
 
-	optionsLeft := &ebiten.DrawImageOptions{}
-	screen.DrawImage(suite, optionsLeft)
-
-	optionsRight := &ebiten.DrawImageOptions{}
-	optionsRight.GeoM.Translate(50, 50)
-	screen.DrawImage(suite, optionsRight)
+    // Draw the image on the screen
+    op := &ebiten.DrawImageOptions{}
+    op.GeoM.Translate(float64(x), float64(y))
+    screen.DrawImage(suite, op)
 }
