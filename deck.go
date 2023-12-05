@@ -6,19 +6,10 @@ import (
 	"time"
 )
 
-const (
-	numSuits  = 4
-	numValues = 13
-)
-
 type Deck struct {
 	Cards []Card
 }
 
-type Card struct {
-	Suite string
-	Value string
-}
 
 type SolitaireSet struct {
 	CardSets [][]Card
@@ -36,11 +27,8 @@ func shuffleDeck(deck Deck) Deck {
 
 func makeDeck() Deck {
 	deck := Deck{}
-	suites := []string{"spades", "hearts", "diamonds", "clubs"}
-	values := []string{"two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "Jack", "Queen", "King", "Ace"}
-
-	for _, suite := range suites {
-		for _, value := range values {
+	for _, suite := range cardConfig.Suites {
+		for _, value := range cardConfig.Values {
 			deck.Cards = append(deck.Cards, Card{Suite: suite, Value: value})
 		}
 	}
@@ -83,7 +71,7 @@ func printFirstCardOfSets(solitaireSet SolitaireSet) {
 	for _, cardSet := range solitaireSet.CardSets {
 		if len(cardSet) > 0 {
 			firstCard := cardSet[0]
-			fmt.Printf("%s of %s\t", firstCard.Value, firstCard.Suite)
+			fmt.Printf("%d of %d\t", firstCard.Value, firstCard.Suite)
 		} else {
 			fmt.Print("Empty\t")
 		}

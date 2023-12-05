@@ -16,11 +16,10 @@ var (
 
 func initImages() {
 	images = make(map[string]*ebiten.Image)
-	loadImage("hearts", "images/suite/hearts.png")
-	loadImage("clubs", "images/suite/clubs.png")
-	loadImage("spades", "images/suite/spades.png")
-	loadImage("diamonds", "images/suite/diamonds.png")
-	loadImage("card", "images/card.png")
+	loadImage("Hearts", "images/suite/hearts.png")
+	loadImage("Clubs", "images/suite/clubs.png")
+	loadImage("Spades", "images/suite/spades.png")
+	loadImage("Diamonds", "images/suite/diamonds.png")
 	imagesReady = true
 }
 
