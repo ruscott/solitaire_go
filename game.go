@@ -15,6 +15,8 @@ const (
 
 var (
 	backgroundColor = color.RGBA{39, 92, 39, 1}
+	NoCard = Card{}
+
 )
 
 type Game struct {
@@ -26,6 +28,7 @@ type Game struct {
 
 	GameState      int
 	SelectedColumn int
+	SelectedCard Card
 
 }
 func (g *Game) Init() {
@@ -37,11 +40,12 @@ func (g *Game) Init() {
 	if len(g.SolitaireSet.CardSets) == 0 {
 		deck := makeDeck()
 		shuffledDeck := shuffleDeck(deck)
-		g.SolitaireSet = createSolitaireSets(shuffledDeck)
+		g.SolitaireSet = createSolitaireSet(shuffledDeck)
 	}
 
 	g.GameState = StateSelectCard
 	g.SelectedColumn = NoSelection
+	g.SelectedCard = NoCard
 }
 
 var keyPressedMap = make(map[ebiten.Key]bool)
@@ -55,39 +59,44 @@ func isKeyJustPressed(key ebiten.Key) bool {
 	}
 	return false
 }
+
 func (g *Game) Update() error {
 	switch g.GameState {
 	case StateSelectCard:
+		if isKeyJustPressed(ebiten.KeyD) {
+			if len(g.SolitaireSet.CardSets[setNumber]) > 0 {
+				card := g.SolitaireSet.CardSets[setNumber][0]
+				g.SolitaireSet.CardSets[setNumber] = append(g.SolitaireSet.CardSets[setNumber][1:], card)
+			}
+		}
 		for i := 0; i <= 9; i++ {
 			key := ebiten.Key(i) + ebiten.Key0
 			if isKeyJustPressed(key) {
 				columnNumber := i
-				fmt.Printf("column length %d ", len(g.SolitaireSet.CardSets[columnNumber-1]))
-				if columnNumber >= 0 && columnNumber < len(g.SolitaireSet.CardSets) && len(g.SolitaireSet.CardSets[columnNumber-1]) > 0 {
-					g.SelectedColumn = columnNumber
+				if columnNumber == 0{
+					columnNumber = setNumber+1} else if columnNumber >= 0 && columnNumber < len(g.SolitaireSet.CardSets) && len(g.SolitaireSet.CardSets[columnNumber-1]) > 0 {
+						g.SelectedCard = g.SolitaireSet.CardSets[columnNumber-1][0]
+					}
 					g.GameState = StateSelectDestination
+					g.SelectedColumn = columnNumber - 1
 				}
 			}
-		}
+
 	case StateSelectDestination:
 		for i := 0; i <= 9; i++ {
 			key := ebiten.Key(i) + ebiten.Key0
 			if isKeyJustPressed(key) {
 				destinationKey := i
-				fmt.Printf("dest no %d ", destinationKey)
+				if destinationKey > 0 && destinationKey < len(g.SolitaireSet.CardSets)-1 {
+					if len(g.SolitaireSet.CardSets[destinationKey-1]) > 0 {
+						if isValidMove(g.SelectedCard, g.SolitaireSet.CardSets[destinationKey-1]) {
+							g.SolitaireSet.CardSets[destinationKey-1] = append([]Card{g.SelectedCard}, g.SolitaireSet.CardSets[destinationKey-1]...)
+							g.SolitaireSet.CardSets[g.SelectedColumn] = g.SolitaireSet.CardSets[g.SelectedColumn][1:]
 
-				if destinationKey >= 0 && destinationKey < len(g.SolitaireSet.CardSets) {
-					if len(g.SolitaireSet.CardSets[g.SelectedColumn]) > 0 {
-						card := g.SolitaireSet.CardSets[g.SelectedColumn-1][0]
-
-						if isValidMove(card, g.SolitaireSet.CardSets[destinationKey-1]) {
-							g.SolitaireSet.CardSets[g.SelectedColumn-1] = g.SolitaireSet.CardSets[g.SelectedColumn-1][1:]
-							g.SolitaireSet.CardSets[destinationKey-1] = append([]Card{card}, g.SolitaireSet.CardSets[destinationKey-1]...)
 						}
 					}
-
-					g.SelectedColumn = NoSelection
 					g.GameState = StateSelectCard
+					g.SelectedCard = NoCard
 				}
 			}
 		}
@@ -98,12 +107,15 @@ func (g *Game) Update() error {
 
 func isValidMove(card Card, destinationColumn []Card) bool {
 	if len(destinationColumn) == 0 {
+		fmt.Printf("card %d", card.Value)
 		return card.Value == 13
 	}
 
 	topCard := destinationColumn[0]
 	topCardColour := getColor(topCard)
 	cardColour := getColor(card)
+
+	fmt.Printf("card 1 %d, card2 %d", topCard.Value, card.Value)
 	return topCard.Value == card.Value+1 && topCardColour != cardColour
 }
 
@@ -114,8 +126,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	drawPrompt(screen, g.GameState)
 
 	for i, cardSet := range g.SolitaireSet.CardSets {
+		if i == setNumber {
+			drawCardInfo(screen, cardSet, ScreenWidth-40, -1, 20, 20)
+		}else{
 		x := int(float64(i) * cellWidth)
-		drawCardInfo(screen, cardSet, x, i, 20, 20)
+		drawCardInfo(screen, cardSet, x, i, 60, 20)
+		}
 	}
 }
 

@@ -41,19 +41,19 @@ func getFirstCardFromShuffledDeck() Card {
 	return shuffledDeck.Cards[0]
 }
 
-func createSolitaireSets(deck Deck) SolitaireSet {
+func createSolitaireSet(deck Deck) SolitaireSet {
 	shuffledDeck := shuffleDeck(deck)
 	solitaireSet := SolitaireSet{}
 
 	cardLen := 1
 	iteration := 1
-	for cardLen < len(shuffledDeck.Cards) {
+	for iteration < setNumber + 1 {
 		deckSlice := shuffledDeck.Cards[cardLen : iteration+cardLen]
 		cardLen = cardLen + iteration
 		iteration = iteration + 1
 		solitaireSet.CardSets = append(solitaireSet.CardSets, deckSlice)
 	}
-
+	solitaireSet.CardSets = append(solitaireSet.CardSets, shuffledDeck.Cards[cardLen:])
 	return solitaireSet
 }
 
